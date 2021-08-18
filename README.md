@@ -1,2 +1,2 @@
 # newtex
-A template for spinning up new files from templates
+A utility for spinning up new files from templates
