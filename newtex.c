@@ -120,25 +120,27 @@ int main(int argc, char *argv[]){
 
     // Read the options
     struct option long_options[] = {
-        {"filename", required_argument, NULL, 'f'},
         {"template", required_argument, NULL, 't'},
-        {"extension", required_argument, NULL, 'e'}
+        {"extension", required_argument, NULL, 'e'},
+        {"directory", required_argument, NULL, 'd'}
     };
-    while((opt = getopt_long(argc, argv, "f:t:e", long_options, &option_index)) != -1) {
+    while((opt = getopt_long(argc, argv, "t:e:d:", long_options, &option_index)) != -1) {
         switch (opt) {
-            case 'f':
-                filename = optarg;
-                break;
             case 't':
                 template = optarg;
                 break;
             case 'e':
                 extension = optarg;
                 break;
+            case 'd':
+                template_dir = optarg;
+                break;
             default:
                 exit(1);
         }
     }
+
+    filename = argv[optind];
 
     if (filename == NULL) {
         fprintf(stderr, "No filename provided\n");
