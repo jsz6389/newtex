@@ -1,3 +1,8 @@
+VERSION = 0.1
+
+PREFIX = /usr/local
+MANPREFIX = ${PREFIX}/share/man
+
 CC := gcc
 CFLAGS := -lconfig
 
@@ -18,7 +23,7 @@ install: all
 	cp -f newtex ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/newtex
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
-	set "s/VERSION/${VERSION}/g" < newtex.1 > ${DESTDIR}${MANPREFIX}/man1/newtex.1
+	sed "s/VERSION/${VERSION}/g" < newtex.1 > ${DESTDIR}${MANPREFIX}/man1/newtex.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/newtex.1
 
 uninstall:
