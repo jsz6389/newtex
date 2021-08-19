@@ -3,8 +3,9 @@ A utility for spinning up new files from templates. This program copies files fr
 
 ## Requirements
 newtex relies upon libconfig, which should be pre-installed on most Linux systems. If not, then simply do one of the following:
-```pacman -S libconfig
+```
 pkg_add libconfig
+pacman -S libconfig
 apt-get install libconfig
 ```
 or whatever your preferred package manager is.
