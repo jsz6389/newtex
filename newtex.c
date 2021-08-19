@@ -27,12 +27,12 @@
  */
 void verify_paths(char* filename, char* template){
     if( access( template, F_OK ) != 0 ) {
-        fprintf( stderr, "Specified template doesn't exist.\n" );
+        fprintf( stderr, "Specified template doesn't exist: %s\n", template );
         exit(1);
     }
 
     if( access( filename, F_OK ) == 0 ) {
-        fprintf( stderr, "Specified file already exists.\n" );
+        fprintf( stderr, "Specified file already exists: %s\n", filename );
         exit(1);
     }
 }
