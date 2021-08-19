@@ -8,14 +8,19 @@
  */
 #include<stdlib.h>
 #include<stdio.h>
+#include<stdint.h>
 #include<unistd.h>
 #include<getopt.h>
 #include<string.h>
 #include<limits.h>
 #include<libconfig.h>
+#include<sys/wait.h>
+
+#include"newtex.h"
 
 #define DEFAULT_CONFIG "/etc/newtex.d/newtex.conf"
 
+uint8_t flags;
 
 /*
  * Verifies that the new file doesn't already exist and 
@@ -99,7 +104,25 @@ char* build_filepath(char* filename, char* extension){
  */
 void build_template(char* filepath, char* template){
     char *args[]={"/bin/cp", template, filepath, NULL};
-    execvp(args[0], args);
+    if ( fork() == 0 ) { execvp(args[0], args); }
+}
+
+
+/*
+ * Opens a file if the write flag is set
+ *
+ * @param filepath The file to open
+ */
+void open_file(char* filepath){
+    if (getenv("EDITOR") == NULL) {
+        fprintf(stderr, "EDITOR environment variable not set\n");
+        exit(1);
+    }
+    if (flags & FLAG_WRITE) {
+        char *args[]={getenv("EDITOR"), filepath, NULL};
+        wait(NULL);
+        execvp(args[0], args);
+    }
 }
 
 
@@ -120,12 +143,16 @@ int main(int argc, char *argv[]){
 
     // Read the options
     struct option long_options[] = {
+        {"write", no_argument, NULL, 'w'},
         {"template", required_argument, NULL, 't'},
         {"extension", required_argument, NULL, 'e'},
         {"directory", required_argument, NULL, 'd'}
     };
-    while((opt = getopt_long(argc, argv, "t:e:d:", long_options, &option_index)) != -1) {
+    while((opt = getopt_long(argc, argv, "t:e:d:w", long_options, &option_index)) != -1) {
         switch (opt) {
+            case 'w':
+                flags |= FLAG_WRITE;
+                break;
             case 't':
                 template = optarg;
                 break;
@@ -151,6 +178,7 @@ int main(int argc, char *argv[]){
     char* templatepath = build_templatepath(template, extension, template_dir);
     verify_paths(filepath, templatepath);
     build_template(filepath, templatepath);
+    open_file(filepath);
 
     return 0;
 }
