@@ -1,0 +1,57 @@
+.TH newtex 1 newtex\-VERSION
+.SH NAME
+newtex
+.SH SYNOPSIS
+.B newtex
+.RB [ \-t " template" ]
+.RB [ \-e " extension" ]
+.RB [ \-d " directory" ]
+.SH DESCRIPTION
+newtex is a customizable shell utility designed to make it easy to create new files from templates. Options can be set using either command arguments or a config file.
+.SH OPTIONS
+.TP
+.B \-t " template"
+specifies the name of the template to be used
+.TP
+.B \-e " extension"
+specifies the file extension to be used
+.TP
+.B \-d " directory"
+specifies the directory to search for templates in
+.SH FILES
+.I /etc/newtex.d/newtex.conf
+.RS
+Configuration options can be found in /etc/newtex.d/newtex.conf
+.RE
+.I /etc/newtex.d/templates/
+.RS
+The default templates directory can be found at /etc/newtex.d/templates/
+.RE
+.SH CUSTOMIZATION
+The following are options available in newtex.conf
+.TP
+.B template_dir
+This specifies the directory to search for templates in.
+.TP
+.B extension
+This specifies the file extension to be used.
+.TP
+.B template
+This specifies the default template name to use.
+.SH EXAMPLES
+.I newtex -t base -e .c example
+.RS
+Creates a new file, example.c, in the current directory using the template titled base.c
+.RE
+.I newtex -t mla -e .tex -d /home/user/Documents/templates/ example
+.RS
+Creates new file, mla.tex, using the template mla.tex in the provided directory
+.RE
+.I newtex example
+.RS
+Creates a new file whose file extension and contents depend upon the config file.
+.RE
+.SH LICENSE
+See the LICENSE file for the terms of redistribution.
+.SH AUTHORS
+Jakob Zielinski <jakobzee3@gmail.com>
