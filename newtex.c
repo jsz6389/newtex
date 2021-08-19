@@ -12,9 +12,30 @@
 #include<getopt.h>
 #include<string.h>
 #include<limits.h>
+#include<libconfig.h>
 
 #define DEFAULT_CONFIG "/etc/newtex.d/newtex.conf"
-#define DEFAULT_TEMPLATE_DIR "/etc/newtex.d/templates/"
+
+
+/*
+ * Verifies that the new file doesn't already exist and 
+ * that the template file exists
+ *
+ * @param filename The file
+ *
+ * @param template The template
+ */
+void verify_paths(char* filename, char* template){
+    if( access( template, F_OK ) != 0 ) {
+        fprintf( stderr, "Specified template doesn't exist.\n" );
+        exit(1);
+    }
+
+    if( access( filename, F_OK ) == 0 ) {
+        fprintf( stderr, "Specified file already exists.\n" );
+        exit(1);
+    }
+}
 
 
 /*
@@ -23,16 +44,19 @@
  * @param template The name of the template to use
  *
  * @param extension The file extension to use
+ *
+ * @param template_dir The directory of the template file
  */
-char* build_templatepath(char* template, char* extension){
-    int length = sizeof(DEFAULT_TEMPLATE_DIR);
+char* build_templatepath(char* template, char* extension, char* template_dir){
+    int length = strlen(template_dir);
     length += strlen(template);
     length += strlen(extension);
 
     char* filepath = (char*)malloc(length);
-    strncat(filepath, DEFAULT_TEMPLATE_DIR, length);
-    strncat(filepath, template, length);
-    strncat(filepath, extension, length);
+    filepath[0] = '\0';
+    strcat(filepath, template_dir);
+    strcat(filepath, template);
+    strcat(filepath, extension);
 
     return filepath;
 }
@@ -56,10 +80,11 @@ char* build_filepath(char* filename, char* extension){
     length++;
 
     char* filepath = (char*)malloc(length);
-    strncat(filepath, cwd, length);
-    strncat(filepath, "/", length);
-    strncat(filepath, filename, length);
-    strncat(filepath, extension, length);
+    filepath[0] = '\0';
+    strcat(filepath, cwd);
+    strcat(filepath, "/");
+    strcat(filepath, filename);
+    strcat(filepath, extension);
 
     return filepath;
 }
@@ -81,10 +106,17 @@ void build_template(char* filepath, char* template){
 int main(int argc, char *argv[]){
     int option_index = 0;
     int opt;
+    char *template_dir, *template, *extension, *filename = NULL;
 
-    char* filename = NULL;
-    char* template = "base";
-    char* extension = ".tex";
+    // Read the config file
+    config_t cfg, *cf;
+    cf = &cfg;
+    config_init(cf);
+    config_read_file(cf, DEFAULT_CONFIG);
+
+    config_lookup_string(cf, "template_dir", (const char**)&template_dir);
+    config_lookup_string(cf, "template", (const char**)&template);
+    config_lookup_string(cf, "extension", (const char**)&extension);
 
     // Read the options
     struct option long_options[] = {
@@ -114,9 +146,8 @@ int main(int argc, char *argv[]){
     }
 
     char* filepath = build_filepath(filename, extension);
-    printf("%s\n", filepath);
-    char* templatepath = build_templatepath(template, extension);
-    printf("%s\n", templatepath);
+    char* templatepath = build_templatepath(template, extension, template_dir);
+    verify_paths(filepath, templatepath);
     build_template(filepath, templatepath);
 
     return 0;
