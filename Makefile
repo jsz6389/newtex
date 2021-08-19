@@ -22,6 +22,8 @@ install: all
 	mkdir -p ${DESTDIR}${PREFIX}/bin
 	cp -f newtex ${DESTDIR}${PREFIX}/bin
 	chmod 755 ${DESTDIR}${PREFIX}/bin/newtex
+	mkdir -p /etc/newtex.d/templates
+	cp -f newtex.conf /etc/newtex.d/
 	mkdir -p ${DESTDIR}${MANPREFIX}/man1
 	sed "s/VERSION/${VERSION}/g" < newtex.1 > ${DESTDIR}${MANPREFIX}/man1/newtex.1
 	chmod 644 ${DESTDIR}${MANPREFIX}/man1/newtex.1
